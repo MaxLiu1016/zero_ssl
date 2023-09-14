@@ -17,7 +17,7 @@ async def create(domain: str):
 
 
 @ssl_router.get("/wild_card/{domain}/create")
-async def create_wild_card(domain: str):
+async def create_wild(domain: str):
     try:
         return await create_wild_card(domain)
     except Exception as e:
