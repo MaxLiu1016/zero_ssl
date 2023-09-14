@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shutil
 from datetime import datetime, timedelta
 import requests
 
@@ -33,9 +34,13 @@ async def create_certificate(domain: str):
             privkey = f.read()
         created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         expire_time = (datetime.now() + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
-        # 移除相關檔案
-        # await run_command(f'rm -rf {full_path}')
-        return {"message": "success", "fullchain": fullchain, "privkey": privkey, "created_time": created_time, "expire_time": expire_time}
+        result = {"message": "success", "fullchain": fullchain, "privkey": privkey, "created_time": created_time,
+                  "expire_time": expire_time}
+
+        # 此處開始移除相關檔案
+        if full_path:
+            shutil.rmtree(full_path)
+        return result
     except Exception as e:
         return {"message": f"error: {e}"}
 
