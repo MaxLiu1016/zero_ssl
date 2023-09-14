@@ -6,11 +6,13 @@ import requests
 
 async def create_certificate(domain: str):
     try:
-        test_result = requests.get(f'http://{domain}/.well-known/acme-challenge/test').text
-        print(test_result)
-        return test_result
+        test_result = requests.get(f'http://{domain}/.well-known/acme-challenge/test', timeout=5).text
         if test_result != 'success':
             return {"message": "此域名尚未正確指向此伺服器"}
+    except (requests.ConnectionError, requests.Timeout, requests.RequestException):
+        return {"message": "此域名尚未正確指向此伺服器"}
+
+    try:
         current_file_path = os.path.abspath(__file__)
         project_path = os.path.dirname(os.path.dirname(current_file_path))
         temp_ssl_path = os.path.join(project_path, 'ssl', 'temp')
