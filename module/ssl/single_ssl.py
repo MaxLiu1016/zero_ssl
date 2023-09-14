@@ -24,8 +24,7 @@ import os
 async def create_certificate(domain: str):
     try:
         test_result = await run_command(f'curl -I -X GET http://{domain}/.well-known/acme-challenge/test')
-        if '200 OK' not in test_result:
-            return {"message": "此域名尚未正確指向，請先指向後再申請"}
+        print(test_result)
         current_file_path = os.path.abspath(__file__)
         project_path = os.path.dirname(os.path.dirname(current_file_path))
         temp_ssl_path = os.path.join(project_path, 'zero_ssl', 'module', 'ssl', 'temp_ssl')
