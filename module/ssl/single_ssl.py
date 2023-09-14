@@ -18,7 +18,7 @@ async def create_certificate(domain: str):
             os.makedirs(full_path)
         await run_command(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -subj "/CN={domain}"')
         await run_command(f'sudo chmod -R 777 {full_path}')
-        await run_command(f'acme.sh --signcsr --csr {full_path}/csr.csr --webroot {challenge_route} -d {domain} --fullchainpath {full_path}/fullchain.pem --force')
+        await run_command(f'~/.acme.sh/acme.sh --signcsr --csr {full_path}/csr.csr --webroot {challenge_route} -d {domain} --fullchainpath {full_path}/fullchain.pem --force')
         for i in range(5):
             if os.path.exists(os.path.join(full_path, 'fullchain.pem')) and os.path.exists(os.path.join(full_path, 'privkey.key')):
                 break
