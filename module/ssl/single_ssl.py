@@ -2,28 +2,16 @@ import asyncio
 import os
 import shutil
 from datetime import datetime, timedelta
-import requests
 import httpx
 
 
 async def create_certificate(domain: str):
-    # try:
-    #     test_result = requests.get(f'http://{domain}/.well-known/acme-challenge/test', timeout=5)
-    #     print(test_result)
-    #     if test_result.text != 'success':
-    #         return {"message": "此域名尚未正確指向此伺服器"}
-    # except Exception as e:
-    #     print('連線失敗', e)
-    #     return {"message": "此域名尚未正確指向此伺服器"}
-
     try:
         async with httpx.AsyncClient() as client:
-            r = await client.get(f'http://{domain}/.well-known/acme-challenge/test', timeout=5)
+            r = await client.get(f'http://{domain}/.well-known/acme-challenge/acme-pre-test', timeout=5)
             result_dict = r.json()
-        if result_dict.get('message') != 'success':
+        if result_dict.get('message') != 'This is for acme pre-test':
             return {"message": "此域名尚未正確指向此伺服器"}
-
-        # ... your other code ...
 
     except (httpx.RequestError, httpx.TimeoutException):
         return {"message": "此域名尚未正確指向此伺服器"}
