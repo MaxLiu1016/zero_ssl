@@ -12,9 +12,9 @@ async def create_wild_card(domain: str):
         full_path = os.path.join(temp_ssl_path, domain)
         if not os.path.exists(full_path):
             os.makedirs(full_path)
-        await run_command(f"openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/{domain}.key -out {full_path}/{domain}.csr -subj '/CN=*.{domain}'")
+        await run_command(f"openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -subj '/CN=*.{domain}'")
         await run_command(f"chmod -R 777 {full_path}")
-        await run_command(f"DP_Id='{DNSPOD_ID}' DP_Key='{DNSPOD_KEY}' ~/.acme.sh/acme.sh --signcsr --csr {full_path}/{domain}.csr --dns dns_dpi -d {domain} --force --fullchain-file {full_path}/{domain}.crt")
+        await run_command(f"DP_Id='{DNSPOD_ID}' DP_Key='{DNSPOD_KEY}' ~/.acme.sh/acme.sh --signcsr --csr {full_path}/csr.csr --dns dns_dpi -d {domain} --fullchainpath {full_path}/fullchain.pem --force")
     except Exception as e:
         print(e)
 
