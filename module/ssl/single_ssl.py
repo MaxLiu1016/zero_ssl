@@ -7,6 +7,8 @@ import requests
 async def create_certificate(domain: str):
     try:
         test_result = requests.get(f'http://{domain}/.well-known/acme-challenge/test').text
+        print(test_result)
+        return test_result
         if test_result != 'success':
             return {"message": "此域名尚未正確指向此伺服器"}
         current_file_path = os.path.abspath(__file__)
