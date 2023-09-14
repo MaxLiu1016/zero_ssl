@@ -23,7 +23,7 @@ import os
 
 async def create_certificate(domain: str):
     try:
-        test_result = await run_command(f'curl -I -X GET https://{domain}/.well-known/acme-challenge/test')
+        test_result = await run_command(f'curl -I -X GET http://{domain}/.well-known/acme-challenge/test')
         if '200 OK' not in test_result:
             return {"message": "此域名尚未正確指向，請先指向後再申請"}
         current_file_path = os.path.abspath(__file__)
