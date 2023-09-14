@@ -30,7 +30,7 @@ async def create_certificate(domain: str):
         created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         expire_time = (datetime.now() + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
         # 移除相關檔案
-        await run_command(f'rm -rf {full_path}')
+        # await run_command(f'rm -rf {full_path}')
         return {"message": "success", "fullchain": fullchain, "privkey": privkey, "created_time": created_time, "expire_time": expire_time}
     except Exception as e:
         return {"message": f"error: {e}"}
