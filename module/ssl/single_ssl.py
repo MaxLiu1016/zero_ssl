@@ -12,6 +12,8 @@ async def create_certificate(domain: str):
         if test_result.text != 'success':
             return {"message": "此域名尚未正確指向此伺服器"}
     except (requests.ConnectionError, requests.Timeout, requests.RequestException):
+        error = requests.exceptions.RequestException
+        print('連線失敗', error )
         return {"message": "此域名尚未正確指向此伺服器"}
 
     try:
