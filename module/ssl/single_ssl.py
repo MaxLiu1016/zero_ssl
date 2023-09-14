@@ -1,30 +1,14 @@
 import asyncio
 import os
-# @app.get("/domain")
-# async def domain():
-#     try:
-#         domain = 'test.hqsmaxtest.online'
-#         current_file_path = os.path.abspath(__file__)
-#         project_path = os.path.dirname(os.path.dirname(current_file_path))
-#         temp_ssl_path = os.path.join(project_path, 'cname_ssl_v7', 'module', 'ssl', 'temp')
-#         full_path = os.path.join(temp_ssl_path, domain)
-#         if not os.path.exists(full_path):
-#             os.makedirs(full_path)
-#         await run_command(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -subj "/CN={domain}"')
-#         print(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -subj "/CN={domain}"')
-#         await run_command(f'sudo chmod -R 777 {full_path}')
-#         print(f'acme.sh --signcsr --csr {full_path}/csr.csr --webroot {full_path} -d {domain} --fullchainpath {full_path}/fullchain.pem --force')
-#         await run_command(f'acme.sh --signcsr --csr {full_path}/csr.csr --webroot {full_path} -d {domain} --fullchainpath {full_path}/fullchain.pem --force')
-#         return {"message": "success"}
-#     except Exception as e:
-#         print(e)
-#         return {"message": f"error: {e}"}
+from datetime import datetime, timedelta
+import requests
 
 
 async def create_certificate(domain: str):
     try:
-        test_result = await run_command(f'curl -I -X GET http://{domain}/.well-known/acme-challenge/test')
-        print(test_result)
+        test_result = requests.get(f'http://{domain}/.well-known/acme-challenge/test').text
+        if test_result != 'success':
+            return {"message": "此域名尚未正確指向此伺服器"}
         current_file_path = os.path.abspath(__file__)
         project_path = os.path.dirname(os.path.dirname(current_file_path))
         temp_ssl_path = os.path.join(project_path, 'ssl', 'temp')
@@ -43,8 +27,10 @@ async def create_certificate(domain: str):
             fullchain = f.read()
         with open(os.path.join(full_path, 'privkey.key'), 'r') as f:
             privkey = f.read()
-        created_time = await run_command(f'openssl x509 -in {full_path}/fullchain.pem -noout -startdate')
-        expire_time = await run_command(f'openssl x509 -in {full_path}/fullchain.pem -noout -enddate')
+        created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        expire_time = (datetime.now() + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
+        # 移除相關檔案
+        await run_command(f'rm -rf {full_path}')
         return {"message": "success", "fullchain": fullchain, "privkey": privkey, "created_time": created_time, "expire_time": expire_time}
     except Exception as e:
         return {"message": f"error: {e}"}
