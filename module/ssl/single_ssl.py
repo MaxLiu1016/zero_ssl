@@ -53,8 +53,8 @@ async def create_certificate(domain: str):
                   "expire_time": expire_time}
 
         # 此處開始移除相關檔案
-        if full_path:
-            shutil.rmtree(full_path)
+        # if full_path:
+        #     shutil.rmtree(full_path)
         return result
     except Exception as e:
         return {"message": f"error: {e}"}
