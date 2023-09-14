@@ -19,9 +19,8 @@ async def create_certificate(domain: str):
     try:
         async with httpx.AsyncClient() as client:
             r = await client.get(f'http://{domain}/.well-known/acme-challenge/test', timeout=5)
-            test_result = r.text
-            print(test_result)
-        if test_result != 'success':
+            result_dict = r.json()
+        if result_dict.get('message') != 'success':
             return {"message": "此域名尚未正確指向此伺服器"}
 
         # ... your other code ...
