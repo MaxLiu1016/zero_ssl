@@ -20,7 +20,7 @@ async def create_certificate(domain: str):
         async with httpx.AsyncClient() as client:
             r = await client.get(f'http://{domain}/.well-known/acme-challenge/test', timeout=5)
             test_result = r.text
-
+            print(test_result)
         if test_result != 'success':
             return {"message": "此域名尚未正確指向此伺服器"}
 
