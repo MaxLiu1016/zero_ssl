@@ -8,6 +8,7 @@ import requests
 async def create_certificate(domain: str):
     try:
         test_result = requests.get(f'http://{domain}/.well-known/acme-challenge/test', timeout=5).text
+        print(test_result)
         if test_result != 'success':
             return {"message": "此域名尚未正確指向此伺服器"}
     except (requests.ConnectionError, requests.Timeout, requests.RequestException):
