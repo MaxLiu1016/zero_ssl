@@ -37,8 +37,15 @@ async def create_certificate(domain: str):
             privkey = f.read()
         created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         expire_time = (datetime.now() + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
-        result = {"message": "success", "fullchain": fullchain, "privkey": privkey, "created_time": created_time,
-                  "expire_time": expire_time}
+        result = {
+            "message": "success",
+            "data": {
+                "fullchain": fullchain,
+                "privkey": privkey,
+                "created_time": created_time,
+                "expire_time": expire_time
+            }
+        }
 
         # 此處開始移除相關檔案
         if full_path:
@@ -47,7 +54,7 @@ async def create_certificate(domain: str):
             await run_command(f'sudo rm -rf {remove_path}')
         return result
     except Exception as e:
-        return {"message": f"error: {e}"}
+        return {"message": "fail", "data": f"error: {e}"}
 
 
 async def get_certificate(domain: str):
