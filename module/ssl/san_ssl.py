@@ -58,9 +58,6 @@ async def create_san_certificate(domains: list[str]):  # 修改參數為域名�
         print(cmd)
         await run_command(cmd)
 
-        # Remove the temporary config
-        await run_command(f'sudo rm {san_config_filepath}')
-
         # 刪除臨時的配置文件
         await run_command(f'sudo rm {san_config_filepath}')
 
