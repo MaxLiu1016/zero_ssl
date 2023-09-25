@@ -30,27 +30,37 @@ async def create_san_certificate(domains: list[str]):  # 修改參數為域名�
             os.makedirs(full_path)
 
         # 生成配置文件
-        san_config = os.path.join(temp_ssl_path, f'san_{datetime.now().strftime("%Y%m%d%H%M%S")}.cnf')
-        with open(san_config, 'w') as f:
-            f.write("[ req ]\n")
-            f.write("default_bits        = 2048\n")
-            f.write("distinguished_name  = req_distinguished_name\n")
-            f.write("req_extensions      = req_ext\n\n")
-            f.write("[ req_distinguished_name ]\n")
-            f.write(f"commonName          = {domains[0]}\n\n")
-            f.write("[ req_ext ]\n")
-            f.write("subjectAltName      = @alt_names\n\n")
-            f.write("[alt_names]\n")
-            for index, domain in enumerate(domains, start=1):
-                f.write(f"DNS.{index} = {domain}\n")
+        san_config_filename = f'san_{datetime.now().strftime("%Y%m%d%H%M%S")}.cnf'
+        san_config_filepath = os.path.join(temp_ssl_path, san_config_filename)
 
-        # 使用該配置文件來產生 CSR
-        print(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config}')
-        await run_command(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config}')
+        # Generate config file
+        san_config_content = f"""
+        [ req ]
+        default_bits       = 2048
+        distinguished_name = req_distinguished_name
+        req_extensions     = req_ext
+
+        [ req_distinguished_name ]
+        commonName = Common Name (eg, your name or your server's hostname)
+        commonName_default = {domains[0]}
+
+        [ req_ext ]
+        subjectAltName = {",".join(f"DNS:{domain}" for domain in domains)}
+        """
+
+        # Save config to temp location
+        with open(san_config_filepath, 'w') as config_file:
+            config_file.write(san_config_content)
+
+        # Create CSR using the config
+        await run_command(
+            f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config_filepath}')
+
+        # Remove the temporary config
+        # os.remove(san_config_filepath)
 
         # 刪除臨時的配置文件
-        print(f'sudo rm {san_config}')
-        await run_command(f'sudo rm {san_config}')
+        await run_command(f'sudo rm {san_config_filepath}')
 
         # 產生所有的 -d 標記
         domain_flags = " ".join(f"-d {domain}" for domain in domains)
