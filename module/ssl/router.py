@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Response
 import os
+
+from .san_ssl import create_san_certificate
 from .single_ssl import create_certificate
 from .wild_card import create_wild_card
 # from fastapi.responses import JSONResponse
@@ -20,6 +22,15 @@ async def create(domain: str):
 async def create_wild(domain: str):
     try:
         return await create_wild_card(domain)
+    except Exception as e:
+        print(e)
+
+
+@ssl_router.get("/san_card/{domains}/create")
+async def create_san(domains: str):
+    domains = domains.split(',')
+    try:
+        return await create_san_certificate(domains)
     except Exception as e:
         print(e)
 
