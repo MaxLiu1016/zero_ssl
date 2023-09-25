@@ -47,31 +47,13 @@ async def create_certificate(domain: str):
             }
         }
 
-        # 此處開始移除相關檔案
         if full_path:
             shutil.rmtree(full_path)
             remove_path = f'~/.acme.sh/{domain}'
             await run_command(f'sudo rm -rf {remove_path}')
         return result
     except Exception as e:
-        return {"message": "fail", "data": f"error: {e}"}
-
-
-async def get_certificate(domain: str):
-    try:
-        current_file_path = os.path.abspath(__file__)
-        project_path = os.path.dirname(os.path.dirname(current_file_path))
-        temp_ssl_path = os.path.join(project_path, 'ssl', 'temp')
-        full_path = os.path.join(temp_ssl_path, domain)
-        if not os.path.exists(full_path):
-            return {"message": "此域名尚未申請"}
-        with open(os.path.join(full_path, 'fullchain.pem'), 'r') as f:
-            fullchain = f.read()
-        with open(os.path.join(full_path, 'privkey.key'), 'r') as f:
-            privkey = f.read()
-        return {"fullchain": fullchain, "privkey": privkey}
-    except Exception as e:
-        return {"message": f"error: {e}"}
+        return {"message": "fail", "data":  str(e)}
 
 
 async def run_command(cmd: str):
