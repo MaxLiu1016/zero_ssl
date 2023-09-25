@@ -49,7 +49,7 @@ async def create_san_certificate(domains: list[str]):  # 修改參數為域名�
         await run_command(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config}')
 
         # 刪除臨時的配置文件
-        os.remove(san_config)
+        await run_command(f'sudo rm {san_config}')
 
         # 產生所有的 -d 標記
         domain_flags = " ".join(f"-d {domain}" for domain in domains)
