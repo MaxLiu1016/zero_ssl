@@ -52,13 +52,14 @@ async def create_san_certificate(domains: list[str]):  # 修改參數為域名�
         with open(san_config_filepath, 'w') as config_file:
             config_file.write(san_config_content)
 
-        # Create CSR using the config
-        print(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config_filepath}')
-        await run_command(
-            f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config_filepath}')
+        # Create CSR using the config with non-interactive mode
+        subject_string = f"/CN={domains[0]}"
+        cmd = f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config_filepath} -subj "{subject_string}"'
+        print(cmd)
+        await run_command(cmd)
 
         # Remove the temporary config
-        # os.remove(san_config_filepath)
+        await run_command(f'sudo rm {san_config_filepath}')
 
         # 刪除臨時的配置文件
         await run_command(f'sudo rm {san_config_filepath}')
