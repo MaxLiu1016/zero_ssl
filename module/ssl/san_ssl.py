@@ -53,6 +53,7 @@ async def create_san_certificate(domains: list[str]):  # 修改參數為域名�
             config_file.write(san_config_content)
 
         # Create CSR using the config
+        print(f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config_filepath}')
         await run_command(
             f'sudo openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -config {san_config_filepath}')
 
