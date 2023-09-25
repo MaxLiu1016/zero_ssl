@@ -9,6 +9,7 @@ async def create_san_certificate(domains: list[str]):  # 修改參數為域名�
     try:
         # 確認每個域名都指向正確的伺服器
         for domain in domains:
+            print(domain)
             async with httpx.AsyncClient() as client:
                 r = await client.get(f'http://{domain}/.well-known/acme-challenge/acme-pre-test', timeout=5)
                 result_dict = r.json()
