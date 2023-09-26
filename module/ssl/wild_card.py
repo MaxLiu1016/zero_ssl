@@ -14,7 +14,8 @@ async def create_wild_card(domain: str):
             os.makedirs(full_path)
         await run_command(f"openssl req -nodes -newkey rsa:2048 -sha256 -keyout {full_path}/privkey.key -out {full_path}/csr.csr -subj '/CN=*.{domain}'")
         await run_command(f"chmod -R 777 {full_path}")
-        await run_command(f" ~/.acme.sh/acme.sh --signcsr --csr {full_path}/csr.csr --dns dns_dpi -d {domain} --fullchainpath {full_path}/fullchain.pem --force")
+        timeout_seconds = 120  # for example, 2 minutes
+        await asyncio.wait_for(run_command(f" ~/.acme.sh/acme.sh --signcsr --csr {full_path}/csr.csr --dns dns_dpi -d {domain} --fullchainpath {full_path}/fullchain.pem --force"),timeout_seconds)
         for i in range(5):
             if os.path.exists(os.path.join(full_path, 'fullchain.pem')) and os.path.exists(os.path.join(full_path, 'privkey.key')):
                 break
@@ -39,8 +40,13 @@ async def create_wild_card(domain: str):
             shutil.rmtree(full_path)
             remove_path = f'~/.acme.sh/{domain}'
             await run_command(f'sudo rm -rf {remove_path}')
+        print(result)
         return result
+    except asyncio.TimeoutError:
+        print("Command execution took too long!")
+        return {"message": "fail", "data": "Command execution took too long!"}
     except Exception as e:
+        print(e)
         return {"message": "fail", "data": str(e)}
 
 
