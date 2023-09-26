@@ -46,7 +46,7 @@ async def create_wild_card(domain: str):
         print("Command execution took too long!")
         return {"message": "fail", "data": "Command execution took too long!"}
     except Exception as e:
-        print(e)
+        print({"message": "fail", "data": str(e)})
         return {"message": "fail", "data": str(e)}
 
 
