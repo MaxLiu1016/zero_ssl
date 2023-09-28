@@ -22,5 +22,6 @@ import asyncio
 #
 # asyncio.run(asyncio.gather(*tasks))
 for i in range(10):
-    create_certificate(f"cnametest{i}.hqsmaxtest.online")
+    # create_certificate(f"cnametest{i}.hqsmaxtest.online")
+    asyncio.run(create_certificate(f"cnametest{i}.hqsmaxtest.online"))
 
