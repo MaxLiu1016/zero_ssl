@@ -1,4 +1,6 @@
 import json
+from pydantic import BaseModel
+from typing import Optional
 from tencentcloud.common import credential
 from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
@@ -37,14 +39,24 @@ async def delete_domain(domain_name: str):
     return resp.to_json_string()
 
 
-async def create_record(domain_name: str, sub_domain_name: str, record_type: str, value: str):
+class RecordCreate(BaseModel):
+    Domain: str
+    DomainId: Optional[int] = None
+    SubDomain: Optional[str] = None
+    RecordType: str
+    RecordLine: Optional[str] = "默认"
+    RecordLineId: Optional[str] = None
+    Value: str
+    MX: Optional[int] = None
+    TTL: Optional[int] = None
+    Weight: Optional[int] = None
+    Status: Optional[str] = None
+    RecordId: Optional[int] = None
+
+
+def create_record(data):
     req = models.CreateRecordRequest()
-    params = {
-        "Domain": domain_name,
-        "SubDomain": sub_domain_name,
-        "RecordType": record_type,
-        "Value": value
-    }
+    params = data
     req.from_json_string(json.dumps(params))
     resp = client.CreateRecord(req)
     return resp.to_json_string()
