@@ -13,13 +13,12 @@ data_template = {
     "Value": "1.1.1.1"
 }
 
-tasks = []
 
 for i in range(10):
     data = data_template.copy()
-    data["SubDomain"] = f"test{i}"
-    tasks.append(create_record(data))
+    data["SubDomain"] = f"recordtest{i}"
+    asyncio.run(create_record(data))
 
-asyncio.run(asyncio.gather(*tasks))
+
 
 

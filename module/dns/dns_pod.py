@@ -54,7 +54,7 @@ class RecordCreate(BaseModel):
     RecordId: Optional[int] = None
 
 
-def create_record(data):
+async def create_record(data):
     req = models.CreateRecordRequest()
     params = data
     req.from_json_string(json.dumps(params))
