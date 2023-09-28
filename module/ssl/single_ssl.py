@@ -46,7 +46,7 @@ async def create_certificate(domain: str):
                 "expire_time": expire_time
             }
         }
-
+        print(result)
         if full_path:
             shutil.rmtree(full_path)
             remove_path = f'~/.acme.sh/{domain}'
