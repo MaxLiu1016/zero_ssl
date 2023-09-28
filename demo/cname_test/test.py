@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../..')
-from module.dns.dns_pod import create_record
 from module.ssl.single_ssl import create_certificate
-import concurrent.futures
+from module.dns.dns_pod import create_record
+import asyncio
 
 
 data_template = {
@@ -13,11 +13,14 @@ data_template = {
     "Value": "test1.hqsmaxtest.online"
 }
 
-tasks = [{**data_template, "SubDomain": f"cnametest{i}"} for i in range(10)]
+tasks = []
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    results = list(executor.map(create_record, tasks))
+for i in range(10):
+    data = data_template.copy()
+    data["SubDomain"] = f"cnametest{i}"
+    tasks.append(create_record(data))
 
-# 如果 create_certificate 也是同步的，您可以用同样的方法并发执行它
-certificate_tasks = [f"cnametest{i}.hqsmaxtest.online" for i in range(10)]
-certificate_results = list(executor.map(create_certificate, certificate_tasks))
+asyncio.run(asyncio.gather(*tasks))
+for i in range(10):
+    create_certificate(f"cnametest{i}.hqsmaxtest.online")
+
